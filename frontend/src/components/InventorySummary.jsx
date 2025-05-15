@@ -229,7 +229,7 @@ const InventorySummary = () => {
       <div className="trend-section">
         <h6>Inventory Value Trend</h6>
         <div className="chart-card">
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="90%" height={300} >
             <LineChart data={stockTrends}>
               <XAxis dataKey="date" />
               <YAxis />
