@@ -113,3 +113,28 @@ h4{
   color: #821504;
   background-color: transparent;
 }
+
+.managesales {
+  width: 100%;
+  border-collapse: separate;  
+  border-spacing: 0;          
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;          
+}
+
+.managesales th, .managesales td {
+  padding: 8px 12px;
+  border: none;
+  text-align: left;
+}
+
+.managesales thead {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.managesales th{
+  background-color: black;
+  color: white;
+}
