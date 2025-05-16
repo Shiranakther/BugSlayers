@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Login.css'; // Reuse the same CSS
-import myImage from '../assets/furniture-log.png'; // Import your image
+import './Login.css'; 
+import myImage from '../assets/furniture-log.png';
+import backgroundImage from '../assets/furniture.webp'; 
+
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -38,11 +40,11 @@ const Signup = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="container-wrapper-login">
         <div className="info-container">
           <img src={myImage} alt="Furniture" className="login-image" />
-          <h1>Welcome To</h1>
+          <h2>Welcome To</h2>
           <p className='logpara'>
             Manage your furniture business with ease and efficiency, streamline operations.
           </p>
@@ -76,7 +78,7 @@ const Signup = () => {
 
             <button type="submit" className="btn">Sign Up</button>
           </form>
-          <p>
+          <p className='para'>
             Already have an account?{' '}
             <a href="/">Login</a>
           </p>
