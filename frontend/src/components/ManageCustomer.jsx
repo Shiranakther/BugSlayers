@@ -111,7 +111,7 @@ const ManageCustomer = () => {
       
 
       {loading ? <p>Loading customers...</p> : (
-        <table className="table table-striped">
+        <table className="managesales">
           <thead>
             <tr>
               <th>ID</th>
