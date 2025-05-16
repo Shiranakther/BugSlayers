@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CSVLink } from 'react-csv';
 import {
   PieChart,
   Pie,
@@ -10,184 +11,178 @@ import {
   YAxis,
   LineChart,
   Line,
-  ResponsiveContainer,
-} from "recharts";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+  ResponsiveContainer
+} from 'recharts';
+import './InventorySummary.css';
 
-const COLORS = ["#0d6efd", "#198754", "#dc3545", "#ffc107", "#6f42c1", "#fd7e14"];
+const COLORS = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#6f42c1', '#fd7e14'];
 
 const InventorySummary = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const [pieData, setPieData] = useState([]);
   const [barData, setBarData] = useState([]);
-  const [stockTrends] = useState([]); // Placeholder
+  const [stockTrends, setStockTrends] = useState([]);
 
   useEffect(() => {
     fetchInventoryItems();
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    applyFilters();
-  }, [inventoryItems, selectedCategory, searchQuery]);
-
   const fetchInventoryItems = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/inventory');
-      const data = await response.json();
-      setInventoryItems(data);
-    } catch (error) {
-      console.error('Error fetching inventory items:', error);
+      const res = await fetch('http://localhost:5000/api/inventory');
+      const data = await res.json();
+      setInventoryItems(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching inventory items:', err);
     }
   };
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/category');
-      const data = await response.json();
+      const res = await fetch('http://localhost:5000/api/category');
+      const data = await res.json();
       setCategories(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
     }
   };
 
-  const getCategoryName = (categoryId) => {
-    const cat = categories.find((c) => c._id === categoryId);
-    return cat ? cat.categoryName : 'Unknown';
-  };
+  useEffect(() => {
+    if (!inventoryItems.length) return;
 
-  const applyFilters = () => {
-    let items = [...inventoryItems];
+    setFilteredItems(inventoryItems);
 
-    if (selectedCategory) {
-      items = items.filter(item => item.category === selectedCategory);
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      items = items.filter(item =>
-        item.name.toLowerCase().includes(q) ||
-        item.code?.toLowerCase().includes(q)
-      );
-    }
-
-    setFilteredItems(items);
-
-    // Pie chart data
     const pieMap = {};
-    items.forEach(item => {
-      pieMap[item.category] = (pieMap[item.category] || 0) + item.quantity;
+    inventoryItems.forEach((it) => {
+      pieMap[it.category] = (pieMap[it.category] || 0) + (it.quantity || 0);
     });
-
     setPieData(
-      Object.entries(pieMap).map(([categoryId, value]) => ({
-        category: getCategoryName(categoryId),
-        value,
+      Object.entries(pieMap).map(([id, val]) => ({
+        category: getCategoryName(id),
+        value: val
       }))
     );
 
-    // Bar chart: top 3 stocked items
-    const bars = items
+    const topN = inventoryItems
+      .map((it) => ({
+        inventoryItem: it.productName,
+        quantity: it.quantity || 0
+      }))
       .sort((a, b) => b.quantity - a.quantity)
-      .slice(0, 3)
-      .map(item => ({ itemName: item.name, quantity: item.quantity }));
+      .slice(0, 10);
+    setBarData(topN);
 
-    setBarData(bars);
+    setStockTrends(
+      inventoryItems.map((it) => ({
+        date: it.dateAdded,
+        value: (it.quantity || 0) * (it.sellingPrice || 0)
+      }))
+    );
+  }, [inventoryItems, categories]);
+
+  const getCategoryName = (id) => {
+    const cat = categories.find((c) => c._id === id);
+    return cat ? cat.categoryName : 'Unknown';
   };
 
-  const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, index }) => {
+  const generateCSVData = () => {
+    const headers = [
+      'No',
+      'Product',
+      'Opening Stock',
+      'Opening Value (Rs)',
+      'Purchases',
+      'Purchase Value (Rs)',
+      'Sales',
+      'Sales Value (Rs)',
+      'Closing Stock',
+      'Closing Value (Rs)',
+      'Profit (Rs)'
+    ];
+    const rows = filteredItems.map((it, i) => {
+      const os = it.openingStock || 0;
+      const p = it.purchases || 0;
+      const s = it.sales || 0;
+      const cs = it.quantity || 0;
+      const price = it.sellingPrice || 0;
+
+      const ov = os * price;
+      const pv = p * price;
+      const sv = s * price;
+      const cv = cs * price;
+      const profit = sv - pv;
+
+      return [
+        i + 1,
+        it.productName,
+        os,
+        ov.toFixed(2),
+        p,
+        pv.toFixed(2),
+        s,
+        sv.toFixed(2),
+        cs,
+        cv.toFixed(2),
+        profit.toFixed(2)
+      ];
+    });
+    return [headers, ...rows];
+  };
+
+  const renderPieLabel = ({ cx, cy, midAngle, outerRadius, percent, index }) => {
     const RADIAN = Math.PI / 180;
-    const radius = outerRadius * 1.2;
+    const radius = outerRadius * 1.25;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
     return (
       <text
         x={x}
         y={y}
-        fill="#000"
-        textAnchor={x > cx ? "start" : "end"}
-        dominantBaseline="central"
         fontSize={12}
+        fill="#000"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
       >
         {`${pieData[index].category}: ${(percent * 100).toFixed(0)}%`}
       </text>
     );
   };
 
+  const totalValue = filteredItems.reduce(
+    (sum, it) => sum + (it.quantity || 0) * (it.sellingPrice || 0),
+    0
+  );
+
   return (
-    <div className="container py-5">
-      <div className="text-center mb-5">
-        <h4 className="fw-bold text-primary">Inventory Summary Report</h4>
-        <h6>A comprehensive overview of your current inventory, categorized by stock, sales trends, and more.</h6>
+    <div className="inventory-summary-container">
+      <div className="header">
+        <h4 className="title">Inventory Summary Report</h4>
+        <h6 className="subtitle">Inventory levels, sales patterns, and stock performance</h6>
       </div>
-
-      {/* Summary Cards */}
-      <div className="row g-4 mb-4">
-        <div className="col-lg-3 col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h5 className="card-title text-success">Total Inventory</h5>
-              <h6><b>{filteredItems.length}</b></h6>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-3 col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h5 className="card-title text-danger">Out of Stock</h5>
-              <h6><b>{filteredItems.filter(item => item.quantity === 0).length}</b></h6>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-3 col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h5 className="card-title text-warning">Low Stock</h5>
-              <h6><b>{filteredItems.filter(item => item.quantity < 5).length}</b></h6>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="d-flex justify-content-between mb-4 flex-wrap gap-2">
-        <div className="input-group w-auto">
-          <label className="input-group-text">Category</label>
-          <select
-            className="form-select"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">All</option>
-            {categories.map((category, idx) => (
-              <option key={idx} value={category.categoryName}>{category.categoryName}</option>
-            ))}
-          </select>
-        </div>
-        <input
-          className="form-control w-auto"
-          type="search"
-          placeholder="Search by item..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      
       <br />
+      <div className="summary-cards">
+        {[
+          { title: 'Total Items', value: filteredItems.length, color: 'green' },
+          { title: 'Inventory Value', value: `Rs ${totalValue.toFixed(2)}`, color: 'blue' },
+          { title: 'Out of Stock', value: filteredItems.filter((it) => !it.quantity).length, color: 'red' },
+          { title: 'Low Stock', value: filteredItems.filter((it) => it.quantity < 5 && it.quantity > 0).length, color: 'orange' }
+        ].map((c) => (
+          <div key={c.title} className="summary-card">
+            <h6 className={`text-${c.color}`}>{c.title}</h6>
+            <h5 className="value">{c.value}</h5>
+          </div>
+        ))}
+      </div>
 
-      {/* Charts */}
-      <div className="row g-4 mb-4">
-        <div className="col-md-6">
+      <div className="charts-row">
+        <div className="chart-container">
           <h6>Stock Distribution by Category</h6>
-          <div className="card shadow-sm p-3">
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-card">
+            <ResponsiveContainer width="100%" height={320}>
               <PieChart>
                 <Pie
                   data={pieData}
@@ -195,12 +190,12 @@ const InventorySummary = () => {
                   nameKey="category"
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
+                  outerRadius={90}
                   labelLine={false}
-                  label={renderCustomizedLabel}
+                  label={renderPieLabel}
                 >
-                  {pieData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  {pieData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -208,12 +203,18 @@ const InventorySummary = () => {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="col-md-6">
-          <h5 className="mb-3">Top Stocked Items</h5>
-          <div className="card shadow-sm p-3">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={barData}>
-                <XAxis dataKey="itemName" />
+
+        <div className="chart-container">
+          <h6>Top Stocked Items</h6>
+          <div className="chart-card">
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={barData} margin={{ top: 20, right: 30, bottom: 40, left: 0 }}>
+                <XAxis
+                  dataKey="inventoryItem"
+                  interval={0}
+                  textAnchor="end"
+                  height={70}
+                />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="quantity" fill="#0d6efd" />
@@ -222,27 +223,31 @@ const InventorySummary = () => {
           </div>
         </div>
       </div>
+      <br />
+      <br />
 
-      {/* Stock Trends */}
-      <div className="mb-5">
-        <h5 className="mb-3">Stock Value Trends</h5>
-        <div className="card shadow-sm p-3">
-          <ResponsiveContainer width="100%" height={300}>
+      <div className="trend-section">
+        <h6>Inventory Value Trend</h6>
+        <div className="chart-card">
+          <ResponsiveContainer width="90%" height={300} >
             <LineChart data={stockTrends}>
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#28a745" />
+              <Line type="monotone" dataKey="value" stroke="#198754" />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Export Buttons */}
-      <div className="d-flex justify-content-end gap-3 mt-4">
-        <button className="btn btn-outline-secondary">Export CSV</button>
-        <button className="btn btn-outline-danger">Export PDF</button>
-        <button className="btn btn-outline-dark" onClick={() => window.print()}>Print Report</button>
+      <div className="export-buttons">
+        <CSVLink
+          data={generateCSVData()}
+          filename="inventory-summary.csv"
+          className="btn btn-csv"
+        >
+          <span className="icon-csv" /> Export CSV
+        </CSVLink>
       </div>
     </div>
   );

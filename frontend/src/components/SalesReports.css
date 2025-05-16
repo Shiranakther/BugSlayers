@@ -63,6 +63,35 @@
   .item-quantity {
     color: #6c757d; 
   }
+
+  .sales {
+    border: transparent;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .sales th, 
+  .sales td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .sales th {
+    background-color: #040b76;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .sales tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .sales tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
   
   
   

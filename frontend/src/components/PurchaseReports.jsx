@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import "./PurchaseReport.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilePdf, faCalendarDays, faChartBar, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 const PurchaseReport = () => {
   const [startDate, setStartDate] = useState("");
@@ -42,19 +44,38 @@ const PurchaseReport = () => {
     <div className="purchase-report-container">
       <h2>Purchase Report</h2>
       <form onSubmit={handleGenerateReport} className="report-form">
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-        <button type="submit">Generate Report</button>
+      
+      <div className="row">
+          <div className="col-md-6 mb-3">
+            <label htmlFor="startDate" className="form-label">
+              <FontAwesomeIcon icon={faCalendarDays} className="me-1" />Start Date
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              id="startDate"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label htmlFor="endDate" className="form-label">
+              <FontAwesomeIcon icon={faCalendarDays} className="me-1" />End Date
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              id="endDate"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <button type="submit" className="btn btn-primary w-100">
+          <FontAwesomeIcon icon={faChartBar} className="me-2" />Generate Report
+        </button>
       </form>
 
       {reportData.length > 0 && (

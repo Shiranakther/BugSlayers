@@ -1,38 +1,78 @@
 .manage-purchases-container {
-    padding: 20px;
-  }
-  
-  .purchases-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .purchases-table th,
-  .purchases-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .purchases-table th {
-    background-color: #f2f2f2;
-  }
-  
-  .edit-purchase-form {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .edit-purchase-form input {
-    margin-bottom: 10px;
-    padding: 8px;
-    font-size: 16px;
-  }
-  
-  .edit-purchase-form button {
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.manage-purchases-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.purchases-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.purchases-table th,
+.purchases-table td {
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.purchases-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.purchases-table td {
+  background-color: #ffffff;
+}
+
+/* Smaller Edit and Delete buttons */
+.purchases-table .btn {
+  font-size: 14px;
+  padding: 5px 8px;
+  min-width: 70px;
+  line-height: 1.2;
+}
+
+/* Action button container */
+.d-flex.gap-2 {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.edit-purchase-form {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 500px;
+}
+
+.edit-purchase-form h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.edit-purchase-form input {
+  margin-bottom: 12px;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.edit-purchase-form button {
+  font-size: 14px;
+  padding: 8px 16px;
+  margin-right: 10px;
+}

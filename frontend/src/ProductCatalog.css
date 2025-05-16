@@ -58,11 +58,18 @@ body {
   flex: 1;
   max-width: 350px; /* Keeps the search bar width in check */
 }
-.btn-xs {
+.btn-xs  {
   font-size: 0.7rem; /* Smaller size */
   padding: 0.3rem 0.6rem;
-  border-radius: 8px; /* Compact styling */
+  border-radius: 6px; /* Compact styling */
   border-color: #646464;
+  color: #333;
+  background-color: #fff;
+}
+
+.btn-xs:hover {
+  background-color: #f0f0f0;
+  color: #000;
 }
 
 .btn-custom-all {

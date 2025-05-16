@@ -1,0 +1,125 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    padding: 30px;
+  }
+  
+  .bill-topic {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #100385;
+    margin-top: 30px;
+  }
+
+  h4{
+    font-weight: 600;
+  }
+  
+  .invoice-form form {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 50%;
+    margin-left: 270px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+    color: #444;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  input[readonly] {
+    background-color: #f2f2f2;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+  }
+  
+  .invoice-container {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #333;
+    background-color: #fff;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 700px;
+  }
+  
+  .invoice-container p {
+    margin: 8px 0;
+    font-size: 16px;
+  }
+  
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+  
+    .invoice-container,
+    .invoice-container * {
+      visibility: visible;
+    }
+  
+    .invoice-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+  
+    button {
+      display: none;
+    }
+  }
+  
+  /* Inline label and input */
+.inline-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .inline-field label {
+    width: 150px; /* adjust width as needed */
+    margin: 0;
+    margin-right: 10px;
+  }
+  
+  .inline-field input[type="text"],
+  .inline-field input[type="number"],
+  .inline-field input[type="date"] {
+    flex: 1;
+  }
+  

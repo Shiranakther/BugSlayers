@@ -39,13 +39,36 @@ const ManageSales = () => {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditingSale((prev) => ({ ...prev, [name]: value }));
+
+    // For quantity and price, recalc amount live
+    setEditingSale((prev) => {
+      const updated = { ...prev, [name]: name === 'quantity' || name === 'price' ? Number(value) : value };
+
+      if (name === 'quantity' || name === 'price') {
+        const qty = name === 'quantity' ? Number(value) : prev.quantity;
+        const prc = name === 'price' ? Number(value) : prev.price;
+        updated.amount = qty * prc;
+      }
+
+      return updated;
+    });
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/sales/${editingSale._id}`, editingSale);
+      // Send quantity and price as numbers, amount is recalculated on backend (but you can send it too)
+      const updateData = {
+        customerName: editingSale.customerName,
+        productName: editingSale.productName,
+        quantity: Number(editingSale.quantity),
+        price: Number(editingSale.price),
+        // You can omit amount if backend recalcs or send it:
+        amount: editingSale.amount,
+        date: editingSale.date
+      };
+
+      await axios.put(`/api/sales/${editingSale._id}`, updateData);
       fetchSales();
       setEditingSale(null);
       alert('Sale record updated successfully!');
@@ -95,7 +118,7 @@ const ManageSales = () => {
       </div>
 
       {/* Sales Table */}
-      <table className="table table-striped">
+      <table className="sales">
         <thead>
           <tr>
             <th>ID</th>
@@ -103,6 +126,7 @@ const ManageSales = () => {
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Amount</th> {/* Added Amount column */}
             <th>Date</th>
             <th>Actions</th>
           </tr>
@@ -115,6 +139,7 @@ const ManageSales = () => {
               <td>{sale.productName}</td>
               <td>{sale.quantity}</td>
               <td>{sale.price}</td>
+              <td>{sale.amount?.toFixed(2) ?? (sale.quantity * sale.price).toFixed(2)}</td> {/* Show amount */}
               <td>{new Date(sale.date).toLocaleDateString()}</td>
               <td>
                 <div className="d-flex justify-content-center">
@@ -174,6 +199,8 @@ const ManageSales = () => {
               className="form-control"
               placeholder="Quantity"
               required
+              min="0"
+              step="any"
             />
           </div>
           <div className="mb-2">
@@ -185,6 +212,19 @@ const ManageSales = () => {
               className="form-control"
               placeholder="Price"
               required
+              min="0"
+              step="any"
+            />
+          </div>
+          {/* Display amount calculated live */}
+          <div className="mb-2">
+            <input
+              type="number"
+              name="amount"
+              value={editingSale.amount?.toFixed(2) ?? (editingSale.quantity * editingSale.price).toFixed(2)}
+              readOnly
+              className="form-control"
+              placeholder="Amount"
             />
           </div>
           <div className="mb-2">

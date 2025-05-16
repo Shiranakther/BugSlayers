@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const SupplierSchema = new mongoose.Schema({
   date: {
@@ -21,20 +21,18 @@ const SupplierSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+
   },
   address: {
     type: String,
-    required: true,
   },
   supplyProducts: {
-    type: String,
-    required: true,
+    type: [String], // Array of product names
   },
   paymentTerms: {
     type: String,
-    required: true,
+
   },
 });
 
-module.exports = mongoose.model('Supplier', SupplierSchema);
+module.exports = mongoose.model("Supplier", SupplierSchema);

@@ -5,23 +5,17 @@ const router = express.Router();
 // Add a new sales record
 router.post('/add', async (req, res) => {
   try {
+    console.log('Request body:', req.body);
     const newSale = new Sales(req.body);
     await newSale.save();
+    console.log('Saved sale:', newSale);
     res.status(201).json(newSale);
   } catch (error) {
+    console.error('Error adding sale:', error);
     res.status(500).json({ message: 'Error adding sale', error });
   }
 });
 
-// Get all sales data
-router.get('/', async (req, res) => {
-  try {
-    const sales = await Sales.find();
-    res.json(sales);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 // Get all sales records
 router.get('/', async (req, res) => {
   try {

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./AddPurchases.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 
 const AddPurchase = () => {
   const [purchase, setPurchase] = useState({
@@ -34,7 +36,9 @@ const AddPurchase = () => {
 
   return (
     <div className="add-purchase-container">
-      <h2>Add Purchase</h2>
+      <div className='text-center' style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '20px' }}>
+        <FontAwesomeIcon icon={faSquarePlus} /> Add Purchase
+      </div>
       <form onSubmit={handleSubmit} className="add-purchase-form">
         <input
           type="text"
@@ -75,7 +79,9 @@ const AddPurchase = () => {
           onChange={handleChange}
           required
         />
-        <button type="submit">Add Purchase</button>
+        <button type="submit" className="btn btn-primary w-100">
+                  <FontAwesomeIcon className="me-2" />Add New Record
+                </button>
       </form>
     </div>
   );

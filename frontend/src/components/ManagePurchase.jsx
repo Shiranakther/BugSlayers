@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./ManagePurchases.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
 const ManagePurchases = () => {
   const [purchases, setPurchases] = useState([]);
   const [editingPurchase, setEditingPurchase] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermDate, setSearchTermDate] = useState('');
 
   useEffect(() => {
     fetchPurchases();
@@ -47,9 +51,41 @@ const ManagePurchases = () => {
     }
   };
 
+  const filteredPurchases = purchases.filter((purchase) =>
+    (purchase.supplierName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     purchase.productName?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (searchTermDate
+      ? new Date(purchase.date).toLocaleDateString() === new Date(searchTermDate).toLocaleDateString()
+      : true)
+  );
+
   return (
     <div className="manage-purchases-container">
-      <h2>Manage Purchases</h2>
+      <h2>
+        <FontAwesomeIcon icon={faClipboardList} className="ms-icon" /> Manage Purchases Records
+      </h2>
+
+      {/* Search by supplier or product name */}
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by supplier or product name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {/* Search by date */}
+      <div className="mb-3">
+        <input
+          type="date"
+          className="form-control"
+          value={searchTermDate}
+          onChange={(e) => setSearchTermDate(e.target.value)}
+        />
+      </div>
+
       <table className="purchases-table">
         <thead>
           <tr>
@@ -62,7 +98,7 @@ const ManagePurchases = () => {
           </tr>
         </thead>
         <tbody>
-          {purchases.map((purchase) => (
+          {filteredPurchases.map((purchase) => (
             <tr key={purchase._id}>
               <td>{purchase.supplierName}</td>
               <td>{purchase.productName}</td>
@@ -70,10 +106,14 @@ const ManagePurchases = () => {
               <td>{purchase.price}</td>
               <td>{new Date(purchase.date).toLocaleDateString()}</td>
               <td>
-                <button onClick={() => handleEditClick(purchase)}>Edit</button>
-                <button onClick={() => handleDelete(purchase._id)}>
-                  Delete
-                </button>
+                <div className="d-flex gap-2">
+                  <button className="btn btn-sm btn-outline-primary w-100" onClick={() => handleEditClick(purchase)}>
+                    <FontAwesomeIcon icon={faEdit} /> Edit
+                  </button>
+                  <button className="btn btn-sm btn-outline-danger w-100" onClick={() => handleDelete(purchase._id)}>
+                    <FontAwesomeIcon icon={faTrash} /> Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -118,10 +158,12 @@ const ManagePurchases = () => {
             onChange={handleEditChange}
             required
           />
-          <button type="submit">Update</button>
-          <button type="button" onClick={() => setEditingPurchase(null)}>
-            Cancel
-          </button>
+          <div className="mt-2">
+            <button type="submit" className="btn btn-success me-2">Update</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setEditingPurchase(null)}>
+              Cancel
+            </button>
+          </div>
         </form>
       )}
     </div>

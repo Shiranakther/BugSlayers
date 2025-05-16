@@ -35,23 +35,6 @@
     border-radius: 10px;
   }
   
-  .table {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  .table th {
-    background-color: #343a40;
-    color: #fff;
-    text-align: center;
-  }
-  
-  .table td {
-    vertical-align: middle;
-    text-align: center;
-  }
-  
   .btn-warning {
     width: 7px;
     margin-right: 0px;
@@ -119,5 +102,39 @@
   
   .cancel-btn:hover {
     background-color: #7b1a05;
+  }
+  
+  .sales {
+    width: 100%;
+    border-collapse: separate; /* important for border-radius to work */
+    border-spacing: 0; /* remove gaps between cells */
+    margin-top: 20px;
+    font-family:  sans-serif;
+    border: none;
+    border-radius: 12px; 
+    overflow: hidden; /* clip overflow to round corners */
+  } 
+  
+  .sales th, 
+  .sales td {
+    border: none;
+    padding: 8px;
+    text-align: left;
+    font-weight: 400;
+  }
+  
+  .sales th {
+    background-color: #0b0b0b;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .sales tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .sales tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
   }
   
