@@ -23,6 +23,7 @@ const Cart = () => {
         }
       }
     }
+    // Set the cart data state
     setcartData(tempData);
   },[cartItems])
 
