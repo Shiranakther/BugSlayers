@@ -14,16 +14,15 @@ const AddCategoryAndSubcategory = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const fetchCategories = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/category');
-      setCategories(res.data);
-    } catch (err) {
-      console.error('Error fetching categories:', err);
-    }
-  };
-
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/category');
+        setCategories(res.data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
     fetchCategories();
   }, []);
 
@@ -46,38 +45,31 @@ const AddCategoryAndSubcategory = () => {
 
     try {
       if (newCategoryName.trim()) {
-        const res = await axios.post('http://localhost:5000/api/category/add', {
+        // Add new category
+        await axios.post('http://localhost:5000/api/category/add', {
           categoryName: newCategoryName.trim(),
         });
-
-        const newCategoryId = res.data._id;
-
-        if (newSubCategory.trim()) {
-          await axios.post(
-            `http://localhost:5000/api/category/${newCategoryId}/subcategory`,
-            { subcategoryName: newSubCategory.trim() }
-          );
-        }
-
-        setSuccess('New category and subcategory added successfully!');
+        setSuccess('New category added successfully!');
       } else if (selectedCategoryId) {
+        // Add subcategory to existing category
         await axios.post(
           `http://localhost:5000/api/category/${selectedCategoryId}/subcategory`,
           { subcategoryName: newSubCategory.trim() }
         );
-        setSuccess('Subcategory added to existing category successfully!');
+        setSuccess('Subcategory added successfully!');
       }
 
-      await fetchCategories();
+      // Refresh categories list after successful add
+      const res = await axios.get('http://localhost:5000/api/category');
+      setCategories(res.data);
 
+      // Clear form inputs
       setNewCategoryName('');
       setSelectedCategoryId('');
       setNewSubCategory('');
     } catch (err) {
       console.error('Error saving category/subcategory:', err);
-      setError(
-        err.response?.data?.error || 'Failed to save category/subcategory. Please try again.'
-      );
+      setError('Failed to save category/subcategory. Please try again.');
     } finally {
       setLoading(false);
     }

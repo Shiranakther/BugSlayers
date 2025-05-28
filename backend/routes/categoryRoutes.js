@@ -3,9 +3,9 @@ const router = express.Router();
 const {
   getAllCategories,
   addCategory,
-  addSubcategory,
   deleteCategory,
   updateCategory,
+  addSubcategory,
 } = require('../controllers/categoryController');
 
 router.get('/', getAllCategories);

@@ -10,28 +10,28 @@ const getAllCategories = async (req, res) => {
   }
 };
 
-// Add new category
+// Add a new category
 const addCategory = async (req, res) => {
   const { categoryName } = req.body;
   if (!categoryName) {
     return res.status(400).json({ error: 'Category name is required' });
   }
   try {
-    const existingCategory = await Category.findOne({ categoryName: categoryName.trim() });
+    const existingCategory = await Category.findOne({ categoryName });
     if (existingCategory) {
       return res.status(400).json({ error: 'Category name already exists' });
     }
 
-    const newCategory = new Category({ categoryName: categoryName.trim(), subcategories: [] });
+    const newCategory = new Category({ categoryName, subcategories: [] });
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
     console.error('Error adding category:', error);
-    res.status(500).json({ error: 'Error adding category' });
+    res.status(500).json({ error: 'Error adding item' });
   }
 };
 
-// Add subcategory
+// Add a subcategory to an existing category
 const addSubcategory = async (req, res) => {
   const { categoryId } = req.params;
   const { subcategoryName } = req.body;
@@ -46,11 +46,11 @@ const addSubcategory = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-    if (category.subcategories.includes(subcategoryName.trim())) {
+    if (category.subcategories.includes(subcategoryName)) {
       return res.status(400).json({ error: 'Subcategory already exists' });
     }
 
-    category.subcategories.push(subcategoryName.trim());
+    category.subcategories.push(subcategoryName);
     await category.save();
 
     res.status(200).json({ message: 'Subcategory added successfully', category });
@@ -60,21 +60,21 @@ const addSubcategory = async (req, res) => {
   }
 };
 
-// Delete category
+// Delete a category by ID
 const deleteCategory = async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedCategory = await Category.findByIdAndDelete(id);
-    if (!deletedCategory) {
-      return res.status(404).json({ error: 'Category not found' });
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
     }
     res.json({ message: 'Category deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Error deleting category' });
+    res.status(500).json({ message: 'Error deleting category' });
   }
 };
 
-// Update category name
+// Update a category by ID
 const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { categoryName } = req.body;
@@ -86,7 +86,7 @@ const updateCategory = async (req, res) => {
   try {
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { categoryName: categoryName.trim() },
+      { categoryName },
       { new: true, runValidators: true }
     );
 
