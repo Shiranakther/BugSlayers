@@ -49,3 +49,7 @@
     background-color: #fafafa;
   }
   
+.reports-container {
+  background-color: #000000; /* Black background for Reports */
+  color: #ffffff;           /* Optional: Ensure text is visible */
+}

@@ -76,3 +76,8 @@
   padding: 8px 16px;
   margin-right: 10px;
 }
+
+.purchases-container {
+  background-color: #000000; /* Black background for Purchases */
+  color: #ffffff;           /* Optional: Ensure text is visible */
+}

@@ -1,0 +1,186 @@
+/* Table container */
+.container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Table base */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Table header */
+table thead tr {
+  background-color: #6c757d;
+  color: white;
+}
+
+table thead tr th {
+  padding: 12px 10px;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+/* Table body rows */
+table tbody tr {
+  background-color: #e9ecef;
+  border-bottom: 1px solid #ced4da;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #dee2e6;
+}
+
+table tbody tr td {
+  padding: 10px;
+  border: 1px solid #ced4da;
+  color: #212529;
+}
+
+/* Input fields inside table */
+table input[type="text"],
+table input[type="number"],
+table input[type="date"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #adb5bd;
+  border-radius: 3px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+/* Buttons */
+
+/* Smaller Edit button */
+.btn-edit {
+  background-color: #1e90ff;
+  color: rgb(58, 49, 49);
+  border: 1px solid black;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 50px;
+  text-align: center;
+}
+
+.btn-edit:hover {
+  background-color: #1c86ee;
+  color: rgb(60, 34, 81);
+}
+
+/* Smaller Cancel button */
+.btn-cancel {
+  background-color: #ff6347;
+  color: rgb(87, 73, 73);
+  border: 1px solid black;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 50px;
+  text-align: center;
+}
+
+.btn-cancel:hover {
+  background-color: #e5533d;
+  color: rgb(60, 34, 81);
+}
+
+/* Smaller Edit (warning) button */
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+  border: 1px solid #ffc107;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 50px;
+  text-align: center;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  color: #212529;
+}
+
+/* Smaller Delete (danger) button */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 50px;
+  text-align: center;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+/* Updated: Shorter Generate Report button */
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #28a745;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 100px; /* Shortened */
+  text-align: center;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 15px;
+    background-color: #f1f3f5;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  tbody tr td {
+    border: none;
+    padding: 8px 10px;
+    text-align: right;
+    position: relative;
+  }
+
+  tbody tr td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: 50%;
+    font-weight: 600;
+    text-align: left;
+  }
+}

@@ -13,23 +13,44 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+
+    // Basic validations
+    if (!email || !password) {
+      alert('Please fill in both email and password.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email address');
+      
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
       alert('Please enter a valid email address');
       return; 
+
     }
 
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      if (response.data.success) {
+      // Use VITE backend URL if available
+      const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+        email,
+        password,
+      });
+
+      if (response.status === 200 && response.data.message === 'Login successful') {
+        alert('Login successful');
+        // Save token or user info if needed
         navigate('/dashboard');
       } else {
-        alert(response.data.message);
+        alert(response.data.message || 'Login failed');
       }
     } catch (error) {
-      alert('Login failed: ' + error);
+      console.error('Login error:', error);
+      alert('Login failed: ' + (error.response?.data?.message || error.message));
     }
     
   };
@@ -39,8 +60,15 @@ const Login = () => {
       <div className="container-wrapper-login">
         <div className="info-container">
           <img src={myImage} alt="Furniture" className="login-image" />
+
+          <h1>Welcome To</h1>
+          <p className="logpara">
+            Manage your furniture business with ease and efficiency, streamline operations.
+          </p>
+
           <h2>Welcome To</h2>
           <p className='logpara'>Manage your furniture business with ease and efficiency, streamline operations.</p>
+
         </div>
         <div className="login-container">
           <h2>Login</h2>

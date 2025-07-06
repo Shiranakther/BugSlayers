@@ -10,11 +10,10 @@ const Sidebar = () => {
   const [isCustomersOpen, setIsCustomersOpen] = useState(false); 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
-
-  const [isSalesOpen, setIsSalesOpen]  = useState(false); 
+  const [isSalesOpen, setIsSalesOpen] = useState(false); 
   const [isInventoryReportOpen, setIsInventoryReportOpen] = useState(false);
-
-  const [isPurchasesOpen, setIsPurchasesOpen] = useState(false); // <-- Added separate state for purchases
+  const [isPurchasesOpen, setIsPurchasesOpen] = useState(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
 
   const toggleSuppliersDropdown = () => {
     setIsSuppliersOpen(!isSuppliersOpen);
@@ -40,15 +39,17 @@ const Sidebar = () => {
     setIsCatalogOpen(!isCatalogOpen);
   };
 
-
   const toggleInventoryReportDropdown = () => {
-  setIsInventoryReportOpen(!isInventoryReportOpen);
-};
+    setIsInventoryReportOpen(!isInventoryReportOpen);
+  };
 
   const togglePurchasesDropdown = () => {
     setIsPurchasesOpen(!isPurchasesOpen);
   };
 
+  const toggleOrdersDropdown = () => {
+    setIsOrdersOpen(!isOrdersOpen);
+  };
 
   return (
     <div className="bg-dark text-white vh-100 p-3">
@@ -114,6 +115,28 @@ const Sidebar = () => {
                   Generate Purchase Report
                 </Link>
               </li>
+            </ul>
+          )}
+        </li>
+
+        {/* Orders Dropdown */}
+        <li className="nav-item mb-3">
+          <button 
+            className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
+            onClick={toggleOrdersDropdown}
+            style={{ cursor: 'pointer' }}>
+            <i className="bi bi-clipboard-check me-2"></i> Orders
+            <i className={`bi ${isOrdersOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
+          </button>
+
+          {isOrdersOpen && (
+            <ul className="nav flex-column ms-3">
+              <li className="nav-item mb-2">
+                <Link to="/dashboard/orders/manage" className="nav-link text-white">
+                  Manage Orders
+                </Link>
+              </li>
+            
             </ul>
           )}
         </li>
@@ -255,35 +278,31 @@ const Sidebar = () => {
           </Link>
         </li>
 
+        {/* Inventory Reports Dropdown */}  
+        <li className="nav-item mb-3">
+          <button 
+            className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
+            onClick={toggleInventoryReportDropdown}
+            style={{ cursor: 'pointer' }}>
+            <i className="bi bi-bar-chart-line me-2"></i> Inventory Reports
+            <i className={`bi ${isInventoryReportOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
+          </button>
 
-
-
-    {/* Inventory Reports Dropdown */}  
-    <li className="nav-item mb-3">
-      <button 
-        className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
-        onClick={toggleInventoryReportDropdown}
-        style={{ cursor: 'pointer' }}>
-      <i className="bi bi-bar-chart-line me-2"></i> Inventory Reports
-      <i className={`bi ${isInventoryReportOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
-      </button>
-
-    {isInventoryReportOpen && (
-    <ul className="nav flex-column ms-3">
-      <li className="nav-item mb-2">
-        <Link to="/dashboard/inventory/reports/low-stock" className="nav-link text-white">
-          Low Stock Report
-        </Link>
-      </li>
-      <li className="nav-item mb-2">
-        <Link to="/dashboard/inventory/reports/summary" className="nav-link text-white">
-          Inventory Summary
-        </Link>
-      </li>
-    </ul>
-    )}
-    </li>
- 
+          {isInventoryReportOpen && (
+            <ul className="nav flex-column ms-3">
+              <li className="nav-item mb-2">
+                <Link to="/dashboard/inventory/reports/low-stock" className="nav-link text-white">
+                  Low Stock Report
+                </Link>
+              </li>
+              <li className="nav-item mb-2">
+                <Link to="/dashboard/inventory/reports/summary" className="nav-link text-white">
+                  Inventory Summary
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
 
       </ul>
     </div>

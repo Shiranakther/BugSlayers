@@ -1,0 +1,5 @@
+/* Ensure the container class matches the HTML structure */
+.supplier-page {
+  background-color: #000000 !important; /* Black background */
+  color: #ffffff !important;             /* White text for contrast */
+}
