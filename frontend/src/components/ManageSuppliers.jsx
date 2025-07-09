@@ -175,33 +175,43 @@ const ManageSuppliers = () => {
       )}
 
       {editingSupplier && (
-        <div className="edit-form-container small-form">
-          <form onSubmit={handleUpdate}>
-            <h4 className="add-title">
+        <div className="edit-form-container">
+          <form onSubmit={handleUpdate} className="form">
+            <h4 className="form-title mb-4 text-lg font-semibold">
               <FontAwesomeIcon icon={faEditIcon} /> Edit Supplier
             </h4>
-            <div className="form-grid">
-              {Object.entries(formData).map(([key, value]) => (
-                <div className="form-field" key={key}>
-                  <label>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+
+            {/* Two-column layout */}
+            <div className="grid grid-cols-2 gap-6">
+              {Object.entries(formData).map(([key, value], index) => (
+                <div key={key} className="flex flex-col">
+                  <label className="text-sm font-medium mb-1">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
                   <input
                     type={key === "email" ? "email" : "text"}
                     name={key}
                     value={value}
                     onChange={handleChange}
                     required={key === "supplierName" || key === "email"}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               ))}
             </div>
-            <div className="button-group">
-              <button type="submit" className="btnUpdate">
+
+            {/* Action buttons */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="submit"
+                className="btnUpdate px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              >
                 Update
               </button>
               <button
                 type="button"
-                className="btnClose"
                 onClick={() => setEditingSupplier(null)}
+                className="btnClose px-5 py-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400"
               >
                 Cancel
               </button>
