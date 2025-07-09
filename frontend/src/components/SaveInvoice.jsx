@@ -40,13 +40,24 @@ function SaveInvoice() {
     }
   };
 
+  const calculateProfit = (item) => {
+    const selling = parseFloat(item.itemPrice || 0);
+    const buying = parseFloat(item.buyingPrice || 0);
+    const qty = parseInt(item.quantity || 0);
+    const discount = parseFloat(item.discount || 0);
+    return ((selling - buying) * qty - discount).toFixed(2);
+  };
+
   if (loading) return <p>Loading invoices...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div>
-      <h2 className='topic'><FontAwesomeIcon icon={faFileInvoice} className="invoice-icon" />Manage Invoices</h2>
-      <table className="invoice-table" border ="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <h2 className='topic'>
+        <FontAwesomeIcon icon={faFileInvoice} className="invoice-icon" />
+        Manage Invoices
+      </h2>
+      <table className="invoice-table" border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
         <thead>
           <tr>
             <th>Invoice ID</th>
@@ -68,9 +79,9 @@ function SaveInvoice() {
             <React.Fragment key={inv._id}>
               <tr>
                 <td>
-                  <button className='invoice-id-btn'
+                  <button
+                    className='invoice-id-btn'
                     onClick={() => toggleExpand(inv._id)}
-                    
                   >
                     {inv.invoiceId}
                   </button>
@@ -103,9 +114,11 @@ function SaveInvoice() {
                           <th>Item Code</th>
                           <th>Item Name</th>
                           <th>Price</th>
+                          <th>Buying Price</th>
                           <th>Quantity</th>
                           <th>Discount</th>
                           <th>Total</th>
+                          <th>Profit</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -114,9 +127,11 @@ function SaveInvoice() {
                             <td>{item.itemCode}</td>
                             <td>{item.itemName}</td>
                             <td>{item.itemPrice}</td>
+                            <td>{item.buyingPrice}</td>
                             <td>{item.quantity}</td>
                             <td>{item.discount}</td>
                             <td>{(item.itemPrice * item.quantity - item.discount).toFixed(2)}</td>
+                            <td>{calculateProfit(item)}</td>
                           </tr>
                         ))}
                       </tbody>

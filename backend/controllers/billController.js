@@ -13,6 +13,7 @@ const getItemByCode = async (req, res) => {
     res.status(200).json({
       name: item.productName,
       price: item.sellingPrice,
+      buyingPrice: item.buyingPrice, // ✅ Include this
       code: item.code,
       quantity: item.quantity,
       category: item.category
