@@ -39,18 +39,18 @@ const PlaceOrder = () => {
         <Title text1="PAYMENT" text2="METHOD" />
         <div className="flex gap-3 flex-col lg:flex-row mt-4">
           
-          {/* Stripe Option */}
-          <div onClick={() => setMethod('stripe')} className={`flex items-center gap-3 border-2 p-3 cursor-pointer rounded-lg transition-all 
+          {/* Visa Option */}
+          <div onClick={() => setMethod('Visa')} className={`flex items-center gap-3 border-2 p-3 cursor-pointer rounded-lg transition-all 
             ${method === 'stripe' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
-            <div className={`w-4 h-4 border-2 rounded-full ${method === 'stripe' ? 'bg-green-600' : 'bg-white'}`}></div>
-            <img className="h-5 mx-4" src={assets.Stripe_logo} alt="Stripe Logo" />
+            <div className={`w-4 h-4 border-2 rounded-full ${method === 'Visa' ? 'bg-green-600' : 'bg-white'}`}></div>
+            <img className="h-5 mx-4" src={assets.Visa} alt="Visa Logo" />
           </div>
 
-          {/* Razorpay Option */}
-          <div onClick={() => setMethod('razorpay')} className={`flex items-center gap-2 border-2 p-3 cursor-pointer rounded-lg transition-all 
-            ${method === 'razorpay' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
-            <div className={`w-4 h-4 border-2 rounded-full ${method === 'razorpay' ? 'bg-green-600' : 'bg-white'}`}></div>
-            <img className="h-5 mx-4" src={assets.Razorpay_icon} alt="Razorpay Logo" />
+          {/*  Option Master*/}
+          <div onClick={() => setMethod('Master')} className={`flex items-center gap-2 border-2 p-3 cursor-pointer rounded-lg transition-all 
+            ${method === 'Master' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
+            <div className={`w-4 h-4 border-2 rounded-full ${method === 'Master' ? 'bg-green-600' : 'bg-white'}`}></div>
+            <img className="h-5 mx-4" src={assets.Master} alt="Master Logo" />
           </div>
 
           {/* Cash on Delivery Option */}
