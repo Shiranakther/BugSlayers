@@ -1,7 +1,7 @@
 // controllers/categoryController.js
 
 const Category = require('../models/Category');
-const Subcategory = require('../models/Subcategory'); // ✅ Required for subcategory updates
+const Subcategory = require('../models/Subcategory'); 
 
 // Get all categories
 const getAllCategories = async (req, res) => {
