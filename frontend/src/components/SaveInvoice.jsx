@@ -3,13 +3,14 @@ import axios from 'axios';
 import { FaTrash } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileInvoice } from '@fortawesome/free-solid-svg-icons';
-import './SaveInvoice.css'; 
+import './SaveInvoice.css';
 
 function SaveInvoice() {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedInvoiceId, setExpandedInvoiceId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -34,7 +35,7 @@ function SaveInvoice() {
     if (!confirm) return;
     try {
       await axios.delete(`http://localhost:5000/api/invoices/${id}`);
-      setInvoices((prev) => prev.filter((inv) => inv._id !== id));
+      setInvoices(prev => prev.filter(inv => inv._id !== id));
       alert('Invoice deleted successfully');
     } catch (err) {
       alert('Failed to delete invoice.');
@@ -49,16 +50,37 @@ function SaveInvoice() {
     return ((selling - buying) * qty - discount).toFixed(2);
   };
 
+  const filteredInvoices = invoices.filter((inv) =>
+    inv.invoiceId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    inv.date.includes(searchTerm)
+  );
+
   if (loading) return <p>Loading invoices...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
-  
   return (
     <div>
       <h2 className='topic'>
         <FontAwesomeIcon icon={faFileInvoice} className="invoice-icon" />
         Manage Invoices
       </h2>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Search by Invoice ID or Date (YYYY-MM-DD)"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: '8px',
+            width: '100%',
+            borderRadius: '4px',
+            border: '1px solid #ccc'
+
+          }}
+        />
+      </div>
+
       <table className="invoice-table" border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
         <thead>
           <tr>
@@ -77,7 +99,7 @@ function SaveInvoice() {
           </tr>
         </thead>
         <tbody>
-          {invoices.map((inv) => (
+          {filteredInvoices.map((inv) => (
             <React.Fragment key={inv._id}>
               <tr>
                 <td>
