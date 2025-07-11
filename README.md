@@ -1,5 +1,7 @@
 
 Group Name : BugSlayers
+Furniture Managmnt System
+
 
 The Sisira Furniture Shop Website and Billing System helps manage the shop and improve customer experience.
 The website displays various furniture items with pictures and descriptions, allowing customers to explore
