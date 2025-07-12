@@ -21,8 +21,6 @@ const billRoutes = require('./routes/billRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 
 
-
-
 const app = express();
 const PORT = 5000;
 
