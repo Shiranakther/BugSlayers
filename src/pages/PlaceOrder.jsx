@@ -1,78 +1,216 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import React, { useContext, useState, useEffect } from 'react';
+// import { ShopContext } from '../context/ShopContext';
+// import Title from '../components/Title';
+// import CartTotal from '../components/CartTotal';
+// import axios from 'axios';
+// import { toast } from 'react-toastify';
+
+// const PlaceOrder = () => {
+//     const { getCartAmount, products, cartItems, currency, deliveryFee, token, backendUrl } = useContext(ShopContext);
+    
+//     const [data, setData] = useState({
+//         firstName: "",
+//         lastName: "",
+//         email: "",
+//         street: "",
+//         city: "",
+//         district: "",
+//         phone: ""
+//     });
+
+//     const onChangeHandler = (event) => {
+//         const { name, value } = event.target;
+//         setData(prevData => ({ ...prevData, [name]: value }));
+//     };
+
+//     const placeOrderHandler = async (event) => {
+//         event.preventDefault();
+        
+//         // Prepare order items array
+//         let orderItems = [];
+//         products.forEach((product) => {
+//             if (cartItems[product._id]) {
+//                 Object.entries(cartItems[product._id]).forEach(([size, quantity]) => {
+//                     if (quantity > 0) {
+//                         let itemInfo = { ...product, quantity, size };
+//                         orderItems.push(itemInfo);
+//                     }
+//                 });
+//             }
+//         });
+
+//         // Prepare order data payload
+//         let orderData = {
+//             address: data,
+//             items: orderItems,
+//             amount: getCartAmount(),
+//             deliveryFee: deliveryFee
+//         };
+
+//         try {
+//             const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
+//                 headers: { Authorization: `Bearer ${token}` }
+//             });
+
+//             if (response.data.success) {
+//                 // Redirect to Stripe checkout
+//                 window.location.replace(response.data.session_url);
+//             } else {
+//                 toast.error(response.data.message || "Something went wrong");
+//             }
+//         } catch (error) {
+//             toast.error(error.response?.data?.message || "Failed to place order.");
+//         }
+//     };
+
+//     return (
+//         <form onSubmit={placeOrderHandler} className="flex flex-col lg:flex-row justify-between gap-8 pt-5 sm:pt-14 min-h-[80vh] border-t">
+//             {/* Left Side - Delivery Info */}
+//             <div className="flex flex-col gap-4 w-full lg:max-w-[480px]">
+//                 <div className="text-xl sm:text-2xl my-3">
+//                     <Title text1="DELIVERY" text2="INFORMATION" />
+//                 </div>
+//                 <div className="flex gap-3">
+//                     <input required name="firstName" onChange={onChangeHandler} value={data.firstName} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="First name" />
+//                     <input required name="lastName" onChange={onChangeHandler} value={data.lastName} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Last name" />
+//                 </div>
+//                 <input required name="email" onChange={onChangeHandler} value={data.email} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="email" placeholder="Email Address" />
+//                 <input required name="street" onChange={onChangeHandler} value={data.street} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Street" />
+//                 <div className="flex gap-3">
+//                     <input required name="city" onChange={onChangeHandler} value={data.city} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="City" />
+//                     <input required name="district" onChange={onChangeHandler} value={data.district} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="District" />
+//                 </div>
+//                 <input required name="phone" onChange={onChangeHandler} value={data.phone} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="tel" placeholder="Phone" />
+//             </div>
+
+//             {/* Right Side - Cart Total & Payment */}
+//             <div className="w-full lg:max-w-sm">
+//                 <CartTotal />
+//                 <div className='w-full mt-8'>
+//                     <button type="submit" className='w-full bg-black text-white px-8 py-3 text-sm hover:bg-pink-600 transition'>
+//                         PROCEED TO PAYMENT
+//                     </button>
+//                 </div>
+//             </div>
+//         </form>
+//     );
+// };
+
+// export default PlaceOrder;
+
+
+import React, { useContext, useState, useEffect } from 'react';
+import { ShopContext } from '../context/ShopContext';
 import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
-import { assets } from '../assets/assets';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const PlaceOrder = () => {
-  const [method, setMethod] = useState('cod');
-  const navigate = useNavigate();
+    const { getCartAmount, products, cartItems, currency, deliveryFee, token, backendUrl } = useContext(ShopContext);
+    const navigate = useNavigate();
 
-  return (
-    <div className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t">
-      
-      {/* Left Side - Delivery Info */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
-        <div className="text-xl sm:text-2xl my-3">
-          <Title text1="DELIVERY" text2="INFORMATION" />
-        </div>
-        <div className="flex gap-3">
-          <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="First name" />
-          <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Last name" />
-        </div>
-        <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="email" placeholder="Email Address" />
-        <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Street" />
-        <div className="flex gap-3">
-          <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="City" />
-          <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="District" />
-        </div>
-        <input className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="number" placeholder="Phone" />
-      </div>
+    const [data, setData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        street: "",
+        city: "",
+        district: "",
+        phone: ""
+    });
 
-      {/* Right Side - Cart Total */}
-      <div className="mt-8 min-w-80">
-        <CartTotal />
-      </div>
+    const onChangeHandler = (event) => {
+        const { name, value } = event.target;
+        setData(prevData => ({ ...prevData, [name]: value }));
+    };
 
-      {/* Payment Method Selection */}
-      <div className="mt-12">
-        <Title text1="PAYMENT" text2="METHOD" />
-        <div className="flex gap-3 flex-col lg:flex-row mt-4">
-          
-          {/* Visa Option */}
-          <div onClick={() => setMethod('Visa')} className={`flex items-center gap-3 border-2 p-3 cursor-pointer rounded-lg transition-all 
-            ${method === 'stripe' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
-            <div className={`w-4 h-4 border-2 rounded-full ${method === 'Visa' ? 'bg-green-600' : 'bg-white'}`}></div>
-            <img className="h-5 mx-4" src={assets.Visa} alt="Visa Logo" />
-          </div>
+    const placeOrderHandler = async (event) => {
+        event.preventDefault();
 
-          {/*  Option Master*/}
-          <div onClick={() => setMethod('Master')} className={`flex items-center gap-2 border-2 p-3 cursor-pointer rounded-lg transition-all 
-            ${method === 'Master' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
-            <div className={`w-4 h-4 border-2 rounded-full ${method === 'Master' ? 'bg-green-600' : 'bg-white'}`}></div>
-            <img className="h-5 mx-4" src={assets.Master} alt="Master Logo" />
-          </div>
+        let orderItems = [];
+        // The 'products' array from context already has all product details, including images.
+        products.forEach((product) => {
+            if (cartItems[product._id]) {
+                Object.entries(cartItems[product._id]).forEach(([size, quantity]) => {
+                    if (quantity > 0) {
+                        // Create a complete item object, including the image.
+                        let itemInfo = {
+                            ...product, // This copies all product details (name, price, image, etc.)
+                            quantity,
+                            size
+                        };
+                        orderItems.push(itemInfo);
+                    }
+                });
+            }
+        });
 
-          {/* Cash on Delivery Option */}
-          <div onClick={() => setMethod('cod')} className={`flex items-center gap-2 border-2 p-3 cursor-pointer rounded-lg transition-all 
-            ${method === 'cod' ? 'bg-green-100 border-green-600' : 'bg-green-50 border-green-400'}`}>
-            <div className={`w-4 h-4 border-2 rounded-full ${method === 'cod' ? 'bg-green-600' : 'bg-white'}`}></div>
-            <p className="text-gray-700 text-sm font-semibold mx-4">CASH ON DELIVERY</p>
-          </div>
-        </div>
+        if (orderItems.length === 0) {
+            return toast.error("Your cart is empty.");
+        }
 
-        {/* Place Order Button */}
-        <div className='w-full text-end mt-8'>
-          <button 
-            onClick={() => navigate('/orders')} 
-            className='bg-black text-white px-16 py-3 text-sm hover:bg-green-700 transition'
-          >
-            PLACE ORDER
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+        let orderData = {
+            address: data,
+            items: orderItems,
+            amount: getCartAmount(),
+            deliveryFee: deliveryFee
+        };
+
+        try {
+            const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.data.success) {
+                window.location.replace(response.data.session_url);
+            } else {
+                toast.error(response.data.message || "Something went wrong");
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to place order.");
+        }
+    };
+    
+    // Redirect if cart is empty
+    useEffect(() => {
+        if (getCartAmount() === 0) {
+            navigate('/');
+        }
+    }, [getCartAmount, navigate]);
+
+    return (
+        <form onSubmit={placeOrderHandler} className="flex flex-col lg:flex-row justify-between gap-8 pt-5 sm:pt-14 min-h-[80vh] border-t">
+            {/* Left Side - Delivery Info */}
+            <div className="flex flex-col gap-4 w-full lg:max-w-[480px]">
+                <div className="text-xl sm:text-2xl my-3">
+                    <Title text1="DELIVERY" text2="INFORMATION" />
+                </div>
+                <div className="flex gap-3">
+                    <input required name="firstName" onChange={onChangeHandler} value={data.firstName} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="First name" />
+                    <input required name="lastName" onChange={onChangeHandler} value={data.lastName} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Last name" />
+                </div>
+                <input required name="email" onChange={onChangeHandler} value={data.email} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="email" placeholder="Email Address" />
+                <input required name="street" onChange={onChangeHandler} value={data.street} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="Street" />
+                <div className="flex gap-3">
+                    <input required name="city" onChange={onChangeHandler} value={data.city} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="City" />
+                    <input required name="district" onChange={onChangeHandler} value={data.district} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="text" placeholder="District" />
+                </div>
+                <input required name="phone" onChange={onChangeHandler} value={data.phone} className="border border-gray-300 rounded py-1.5 px-3.5 w-full" type="tel" placeholder="Phone" />
+            </div>
+
+            {/* Right Side - Cart Total & Payment */}
+            <div className="w-full lg:max-w-sm">
+                <CartTotal />
+                <div className='w-full mt-8'>
+                    <button type="submit" className='w-full bg-black text-white px-8 py-3 text-sm hover:bg-pink-600 transition'>
+                        PROCEED TO PAYMENT
+                    </button>
+                </div>
+            </div>
+        </form>
+    );
 };
 
 export default PlaceOrder;

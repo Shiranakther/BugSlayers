@@ -36,31 +36,44 @@ const addToCart=async(req,res)=>{
 }
 
 //Add user cart
-const updateToCart=async(req,res)=>{
+const updateToCart = async (req, res) => {
     try {
         const { userId, itemId, size, quantity } = req.body;
 
         const userData = await userModel.findById(userId);
-        const cartData = await userData.cartData;
+        const cartData = { ...userData.cartData }; // clone to avoid mutation issues
 
-        cartData[itemId][size] = quantity;
+        if (quantity === 0) {
+            // Remove size entry
+            if (cartData[itemId] && cartData[itemId][size]) {
+                delete cartData[itemId][size];
 
-        await userModel.findByIdAndUpdate(userId, { cartData: cartData });
+                // If no sizes left for that item, remove the item itself
+                if (Object.keys(cartData[itemId]).length === 0) {
+                    delete cartData[itemId];
+                }
+            }
+        } else {
+            // If item or size doesn't exist, create them
+            if (!cartData[itemId]) cartData[itemId] = {};
+            cartData[itemId][size] = quantity;
+        }
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+
         res.json({
             success: true,
             message: "Cart updated",
         });
-
-
     } catch (error) {
         console.log(error);
         res.json({
             success: false,
-            message: error.message
+            message: error.message,
         });
-
     }
-}
+};
+
 //get user cart data
 const getUserCart=async(req,res)=>{
     try {
@@ -83,8 +96,43 @@ const getUserCart=async(req,res)=>{
     }
 }
 
+const removeFromCart = async (req, res) => {
+    try {
+        const { userId, itemId, size } = req.body;
+
+        const userData = await userModel.findById(userId);
+        const cartData = { ...userData.cartData }; // Avoid modifying reference
+
+        if (cartData[itemId] && cartData[itemId][size]) {
+            delete cartData[itemId][size];
+
+            // If no sizes remain for this item, remove the item entirely
+            if (Object.keys(cartData[itemId]).length === 0) {
+                delete cartData[itemId];
+            }
+
+            await userModel.findByIdAndUpdate(userId, { cartData });
+
+            res.json({
+                success: true,
+                message: "Item removed from cart",
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Item or size not found in cart",
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
 
 
-export{addToCart,updateToCart,getUserCart}
+export{addToCart,updateToCart,getUserCart,removeFromCart}
 
 

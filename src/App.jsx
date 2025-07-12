@@ -14,6 +14,11 @@ import Footer from './components/Footer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchBar from './components/searchBar'
+import ProfilePage from './pages/ProfilePage'
+
+
+import Verify from './pages/Verify';
+import MyOrders from './pages/MyOrders';
 
 
 
@@ -35,6 +40,12 @@ const App = () => {
         <Route path='/logIn' element={<LogIn/>} />
         <Route path='/placeOrder' element={<PlaceOrder/>} />
         <Route path='/orders' element={<Orders/>} />
+        <Route path='/profile' element={<ProfilePage/>}/>
+
+        
+        <Route path='/verify' element={<Verify />} />
+        <Route path='/myorders' element={<MyOrders />} />
+
       </Routes>
       <Footer/>
     </div>
