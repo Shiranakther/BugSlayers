@@ -45,8 +45,19 @@ const ShopContextProvider = (props) => {
          }
          console.log("Updated cart data:", cartData);
          setCartItems(cartData);
-  };
+  
+  if (token){
+    try {
+        const userId=JSON.parse(atob(token.split('.')[1])).id;
+        await axios.post(backendUrl + '/api/cart/add', { userId,itemId, size },{headers:{Authorization:token}}
         
+         );} catch (error) {
+    console.error("Failed to add item to cart:", error);
+    toast.error(error.message)
+        
+    }
+  }
+};      
 
     const getCartCount = () => {
         let totalCount = 0;
@@ -82,7 +93,7 @@ const ShopContextProvider = (props) => {
                     totalAmount += itemInfo.price * cartItems[itemId][size];
                 }
             } catch (error) {
-                console.error("Cart amount calculation error:", error);
+                console.log.error("Cart amount calculation error:", error);
             }
         }
     }
