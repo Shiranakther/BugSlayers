@@ -1,4 +1,3 @@
-// ⬇️ your imports (unchanged)
 import { useState, useEffect, useMemo } from 'react';
 import { CSVLink } from 'react-csv';
 import jsPDF from 'jspdf';
@@ -13,13 +12,18 @@ import {
   Bar,
   XAxis,
   YAxis,
+  ResponsiveContainer,
   LineChart,
   Line,
-  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
 } from 'recharts';
 import './InventorySummary.css';
 
-const COLORS = ['#FF6B6B', '#6BCB77', '#4D96FF', '#FFD93D', '#9D4EDD', '#00B8A9'];
+const COLORS = [
+  '#A8DADC', '#F4A261', '#B5E48C', '#F8C291', '#9ADCFF',
+  '#F7A9A8', '#D3B8AE', '#CDB4DB', '#FFE066'
+];
 
 const InventorySummary = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -90,16 +94,32 @@ const InventorySummary = () => {
   }));
 
   const barData = filteredItems
-    .map(it => ({ inventoryItem: it.productName, quantity: it.quantity || 0 }))
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 10);
-
-  const lineData = filteredItems
     .map(it => ({
-      date: it.dateAdded,
-      value: (it.quantity || 0) * (it.sellingPrice || 0),
+      name: it.productName || 'N/A',
+      quantity: it.quantity || 0
     }))
+    .sort((a, b) => a.quantity - b.quantity)
+    .slice(-5);
+
+  // 🎯 Inventory Value Trends by individual item date (Snake-Like)
+  const inventoryValueTrends = useMemo(() => {
+  return inventoryItems
+    .filter(it => {
+      const qty = Number(it.quantity);
+      const price = Number(it.sellingPrice);
+      return it.dateAdded && qty > 0 && price > 0;
+    })
+    .map(it => {
+      const d = new Date(it.dateAdded);
+      const formattedDate = d.toISOString().split('T')[0];
+      return {
+        date: formattedDate,
+        value: Number((it.quantity * it.sellingPrice).toFixed(2))
+      };
+    })
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+}, [inventoryItems]);
+
 
   const generateCSVData = () => {
     const headers = [
@@ -111,7 +131,7 @@ const InventorySummary = () => {
       return [
         i + 1,
         item.productName || 'N/A',
-        item.code || 'N/A', // ✅ fixed line
+        item.code || 'N/A',
         getCategoryName(item.category),
         item.dateAdded || 'N/A',
         item.supplier || 'N/A',
@@ -123,35 +143,24 @@ const InventorySummary = () => {
     return [headers, ...rows];
   };
 
-  const getReportMonthYear = (date) => {
-    const options = { year: 'numeric', month: 'long' };
-    return date.toLocaleDateString('en-GB', options);
-  };
-
   const generatePDF = (reportDate = new Date()) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const reportMonthYear = getReportMonthYear(reportDate);
-
-    const companyName = 'New Sisira Furniture';
-    const companyAddress = 'No 156, Sisira Furniture, Matara Road, Kamburupitiya';
-    const companyContact = '077-3211603 | 071-8006485';
-    const reportTitle = 'Inventory Summary Report';
+    const reportMonthYear = reportDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
 
     try {
       doc.addImage(furnitureLogo, 'PNG', 14, 10, 25, 25);
       doc.setFontSize(13);
       doc.setTextColor(40);
-      doc.text(companyName, 45, 15);
+      doc.text('New Sisira Furniture', 45, 15);
 
       doc.setFontSize(10);
-      doc.text(companyAddress, 45, 21);
-      doc.text(`Tel: ${companyContact}`, 45, 27);
+      doc.text('No 156, Sisira Furniture, Matara Road, Kamburupitiya', 45, 21);
+      doc.text('Tel: 077-3211603 | 071-8006485', 45, 27);
 
       doc.setFontSize(12);
       doc.setTextColor(60);
-      doc.text(reportTitle, 14, 45);
-
+      doc.text('Inventory Summary Report', 14, 45);
       doc.setFontSize(11);
       doc.text(`Report Month: ${reportMonthYear}`, 14, 53);
 
@@ -169,7 +178,7 @@ const InventorySummary = () => {
         return [
           i + 1,
           item.productName || 'N/A',
-          item.code || 'N/A', // ✅ fixed line
+          item.code || 'N/A',
           getCategoryName(item.category),
           item.dateAdded || 'N/A',
           item.supplier || 'N/A',
@@ -205,14 +214,33 @@ const InventorySummary = () => {
     generatePDF(new Date(year, month - 1));
   };
 
+  const renderCustomizedLabel = ({
+    cx, cy, midAngle, innerRadius, outerRadius, percent, index,
+  }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="black"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        fontSize={11}
+      >
+        {`${pieData[index].category}: ${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
   return (
     <div className="inventory-report-wrapper">
       <header className="company-header">
         <h6 className="company-name"><b><center>New Sisira Furniture</center></b></h6>
         <h6 className="report-name"><b><center>Inventory Summary Report</center></b></h6>
       </header>
-
-      <br />
 
       <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <label htmlFor="report-month">Select Report Month:</label>
@@ -225,110 +253,85 @@ const InventorySummary = () => {
       </div>
 
       <section className="summary-cards">
-        <div className="summary-card">
-          <div className="card-label">Total Inventory Items</div>
-          <div className="card-value">{totalItems}</div>
+        <div className="summary-card"><div className="card-label">Total Inventory Items</div><div className="card-value">{totalItems}</div></div>
+        <div className="summary-card"><div className="card-label">Total Value (Rs)</div><div className="card-value">{totalValue.toFixed(2)}</div></div>
+        <div className="summary-card"><div className="card-label">Out of Stock</div><div className="card-value">{outOfStock}</div></div>
+        <div className="summary-card"><div className="card-label">Low Stock</div><div className="card-value">{lowStock}</div></div>
+      </section>
+
+      <section className="charts-row" style={{ display: 'flex', gap: '1rem' }}>
+        <div className="chart-container" style={{ flex: 1 }}>
+          <h6><b>Stock Distribution by Category</b></h6>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="category"
+                cx="50%"
+                cy="50%"
+                outerRadius={70}
+                labelLine={false}
+                label={renderCustomizedLabel}
+              >
+                {pieData.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => `${value} items`} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
-        <div className="summary-card">
-          <div className="card-label">Total Value (Rs)</div>
-          <div className="card-value">{totalValue.toFixed(2)}</div>
-        </div>
-        <div className="summary-card">
-          <div className="card-label">Out of Stock</div>
-          <div className="card-value">{outOfStock}</div>
-        </div>
-        <div className="summary-card">
-          <div className="card-label">Low Stock</div>
-          <div className="card-value">{lowStock}</div>
+
+        <div className="chart-container" style={{ flex: 1 }}>
+          <h6><b>Top 5 Stocked Items</b></h6>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart
+              data={barData}
+              layout="vertical"
+              margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+            >
+              <XAxis
+                type="number"
+                label={{ value: 'Quantity', position: 'insideBottomRight', offset: -5 }}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                dataKey="name"
+                type="category"
+                width={150}
+                tick={{ fontSize: 12, fill: '#34495e' }}
+              />
+              <Tooltip />
+              <Bar dataKey="quantity" fill={COLORS[0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </section>
 
-      <br />
-
-      <section className="charts-row" style={{ marginBottom: '1rem' }}>
-        <div className="chart-row-top" style={{ display: 'flex', gap: '1rem' }}>
-          <div className="chart-container" style={{ flex: 1 }}>
-            <h7><b>Stock Distribution by Category</b></h7>
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="category"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  label={({ category, percent }) =>
-                    `${category}: ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {pieData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value} items`} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="chart-container" style={{ flex: 1 }}>
-            <h7><b>Top 10 Stocked Items</b></h7>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 40 }}>
-                <XAxis dataKey="inventoryItem" angle={-45} textAnchor="end" height={60} />
-                <YAxis label={{ value: 'Quantity', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Bar dataKey="quantity" fill="#34495e" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <br />
-
-        <div className="chart-row-bottom" style={{ marginTop: '1rem' }}>
-          <div className="chart-container">
-            <h7><b>Inventory Value Trends</b></h7>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={lineData} margin={{ top: 10, right: 30, left: 20, bottom: 30 }}>
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(tick) => new Date(tick).toLocaleDateString('en-GB')}
-                  angle={-45}
-                  textAnchor="end"
-                  height={50}
-                />
-                <YAxis label={{ value: 'Value (Rs)', angle: -90, position: 'insideLeft' }} />
-                <Tooltip formatter={(value) => `Rs ${value.toFixed(2)}`} />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#27ae60"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+      <section className="charts-row" style={{ marginTop: '2rem' }}>
+        <div className="chart-container" style={{ width: '100%' }}>
+          <h6><b>Inventory Value Trends</b></h6>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={inventoryValueTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip formatter={(value) => `Rs ${value.toFixed(2)}`} labelFormatter={(label) => `Date: ${label}`} />
+              <Legend />
+              <Line type="natural" dataKey="value" stroke={COLORS[1]} strokeWidth={3} dot={{ r: 2 }} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </section>
-
-      <br />
 
       <section className="table-section">
         <table className="inventory-table">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Product</th>
-              <th>Item Code</th>
-              <th>Category</th>
-              <th>Date</th>
-              <th>Supplier</th>
-              <th>Quantity</th>
-              <th>Unit Price (Rs)</th>
-              <th>Total Value (Rs)</th>
+              <th>No</th><th>Product</th><th>Item Code</th><th>Category</th>
+              <th>Date</th><th>Supplier</th><th>Quantity</th>
+              <th>Unit Price (Rs)</th><th>Total Value (Rs)</th>
             </tr>
           </thead>
           <tbody>
@@ -338,7 +341,7 @@ const InventorySummary = () => {
                 <tr key={item._id}>
                   <td>{i + 1}</td>
                   <td>{item.productName || 'N/A'}</td>
-                  <td>{item.code || 'N/A'}</td> {/* ✅ fixed line */}
+                  <td>{item.code || 'N/A'}</td>
                   <td>{getCategoryName(item.category)}</td>
                   <td>{item.dateAdded || 'N/A'}</td>
                   <td>{item.supplier || 'N/A'}</td>
@@ -353,9 +356,7 @@ const InventorySummary = () => {
       </section>
 
       <footer className="report-footer">
-        <button className="pdf-button" onClick={handleGeneratePDF}>
-          Generate Monthly PDF
-        </button>
+        <button className="pdf-button" onClick={handleGeneratePDF}>Generate Monthly PDF</button>
         <CSVLink className="csv-button" data={generateCSVData()} filename="inventory-report.csv">
           Export to CSV
         </CSVLink>
